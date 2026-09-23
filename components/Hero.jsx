@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import {
   motion,
   useMotionTemplate,
@@ -54,7 +54,6 @@ export default function Hero() {
   const reduced = useReducedMotion();
   const sectionRef = useRef(null);
   const videoRef = useRef(null);
-  const [playing, setPlaying] = useState(true);
 
   // Pointer position, normalised to -0.5..0.5 across the hero.
   const nx = useMotionValue(0);
@@ -96,19 +95,10 @@ export default function Hero() {
     if (reduced) {
       v.pause();
       v.currentTime = 0;
-    } else if (v.paused && playing) {
-      v.play().catch(() => setPlaying(false));
+    } else if (v.paused) {
+      v.play().catch(() => {});
     }
-  }, [reduced]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  function togglePlay() {
-    const v = videoRef.current;
-    if (!v) return;
-    if (v.paused) v.play();
-    else v.pause();
-  }
-
-  const isPlaying = playing && !reduced;
+  }, [reduced]);
 
   return (
     <section
@@ -129,8 +119,6 @@ export default function Hero() {
             loop
             playsInline
             preload="auto"
-            onPlay={() => setPlaying(true)}
-            onPause={() => setPlaying(false)}
           />
         </motion.div>
       </motion.div>
@@ -168,23 +156,6 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      <button
-        type="button"
-        className="hero__toggle"
-        onClick={togglePlay}
-        aria-label={isPlaying ? t("hero.pauseVideo") : t("hero.playVideo")}
-      >
-        {isPlaying ? (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <rect x="6" y="5" width="4" height="14" rx="1" />
-            <rect x="14" y="5" width="4" height="14" rx="1" />
-          </svg>
-        ) : (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z" />
-          </svg>
-        )}
-      </button>
     </section>
   );
 }
