@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { motion } from "motion/react";
 import { useApp } from "@/lib/store";
 
@@ -20,6 +21,41 @@ const ICONS = [
     <path d="M4 12.5 9 17l11-11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
   </svg>,
 ];
+
+function HoverOrb() {
+  const videoRef = useRef(null);
+
+  const play = () => videoRef.current?.play().catch(() => {});
+  const pause = () => videoRef.current?.pause();
+
+  return (
+    <div className="benefits__art" aria-hidden="true">
+      <motion.div
+        className="orb"
+        whileHover={{ scale: 1.03, boxShadow: "0 0 0 1px rgba(19,226,241,.55), 0 24px 60px -12px rgba(6,68,244,.55)" }}
+        transition={{ type: "spring", stiffness: 260, damping: 22 }}
+        onPointerEnter={(e) => e.pointerType === "mouse" && play()}
+        onPointerLeave={(e) => e.pointerType === "mouse" && pause()}
+        onPointerDown={(e) => {
+          if (e.pointerType === "mouse") return;
+          const v = videoRef.current;
+          if (v) (v.paused ? play() : pause());
+        }}
+      >
+        <video
+          ref={videoRef}
+          className="orb__video"
+          src="/video/benefits.mp4"
+          muted
+          loop
+          playsInline
+          preload="auto"
+          tabIndex={-1}
+        />
+      </motion.div>
+    </div>
+  );
+}
 
 export default function Benefits() {
   const { t } = useApp();
@@ -49,25 +85,7 @@ export default function Benefits() {
             ))}
           </ul>
         </div>
-        <div className="benefits__art" aria-hidden="true">
-          <div className="art-ring art-ring--1" />
-          <div className="art-ring art-ring--2" />
-          <svg className="art-infinity" viewBox="0 0 200 100" width="220" height="110">
-            <path
-              d="M50 50c0-16 13-27 27-27 20 0 30 27 30 27s10 27 30 27c14 0 27-11 27-27s-13-27-27-27c-20 0-30 27-30 27s-10 27-30 27c-14 0-27-11-27-27Z"
-              fill="none"
-              stroke="url(#infGrad)"
-              strokeWidth="6"
-              strokeLinecap="round"
-            />
-            <defs>
-              <linearGradient id="infGrad" x1="0" y1="0" x2="200" y2="100" gradientUnits="userSpaceOnUse">
-                <stop offset="0" stopColor="#13E2F1" />
-                <stop offset="1" stopColor="#0644F4" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
+        <HoverOrb />
       </div>
     </section>
   );

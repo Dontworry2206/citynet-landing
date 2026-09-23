@@ -357,15 +357,24 @@ h3 { font-size: 19px; line-height: 1.3; }
 .benefits__list h3 { margin-bottom: 4px; }
 .benefits__list p { margin: 0; color: var(--text-muted); font-size: 15px; }
 
-.benefits__art { position: relative; height: 320px; display: flex; align-items: center; justify-content: center; }
-.art-ring { position: absolute; border-radius: 50%; border: 1.5px solid var(--border); }
-.art-ring--1 { width: 280px; height: 280px; }
-.art-ring--2 { width: 200px; height: 200px; border-color: rgba(6,68,244,.25); }
-.art-infinity { position: relative; z-index: 1; }
+.benefits__art { display: flex; align-items: center; justify-content: center; }
+.orb {
+  position: relative; width: min(100%, 400px); aspect-ratio: 1;
+  border-radius: 36px; overflow: hidden; cursor: pointer;
+  background: #0F1236;
+  box-shadow: var(--shadow-card);
+  touch-action: manipulation;
+}
+.orb__video {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  mix-blend-mode: screen; transform: scale(1.15); pointer-events: none;
+  filter: contrast(1.6) brightness(.9);
+}
 
 @media (max-width: 860px) {
   .benefits__grid { grid-template-columns: 1fr; gap: 32px; }
-  .benefits__art { height: 200px; order: -1; }
+  .benefits__art { order: -1; }
+  .orb { width: min(100%, 280px); }
 }
 
 /* ================= TARIFFS ================= */
