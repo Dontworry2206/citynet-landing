@@ -1,12 +1,11 @@
 import { Unbounded } from "next/font/google";
 import "./globals.css";
 
-// Fallback for headings until the licensed GoodTime Grotesk file is added
-// at public/fonts/goodtime-grotesk.woff2 (see @font-face in globals.css).
+// Free stand-in for GoodTime Grotesk: wide, geometric, Latin + Cyrillic.
 const unbounded = Unbounded({
   subsets: ["latin", "cyrillic"],
   weight: ["500", "600", "700", "800"],
-  variable: "--font-fallback-display",
+  variable: "--font-unbounded",
   display: "swap",
 });
 

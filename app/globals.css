@@ -3,17 +3,8 @@
    Brand colors per CITYNET_ТЗ (section 3) + citynet.uz live site
    ========================================================= */
 
-@font-face {
-  font-family: "GoodTime Grotesk";
-  src: url("/fonts/goodtime-grotesk.woff2") format("woff2"),
-       url("/fonts/goodtime-grotesk.otf") format("opentype");
-  font-weight: 400 800;
-  font-style: normal;
-  font-display: swap;
-}
-
 body {
-  --font-display: "GoodTime Grotesk", var(--font-fallback-display), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-unbounded), ui-sans-serif, system-ui, sans-serif;
   --font-body: "Helvetica Neue", Helvetica, Arial, "Segoe UI", Roboto, sans-serif;
 }
 
