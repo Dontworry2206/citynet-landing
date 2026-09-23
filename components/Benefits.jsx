@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { useApp } from "@/lib/store";
 
 const ICONS = [
@@ -24,16 +24,38 @@ const ICONS = [
 
 function HoverOrb() {
   const videoRef = useRef(null);
+  const wrapRef = useRef(null);
   const [hot, setHot] = useState(false);
+  const reduced = useReducedMotion();
 
   const play = () => videoRef.current?.play().catch(() => {});
   const pause = () => videoRef.current?.pause();
+
+  // Frame 0 is almost black (invisible on the light theme), so rest on a frame
+  // where the sphere is fully drawn.
+  function showRestFrame() {
+    const v = videoRef.current;
+    if (v && v.paused && v.currentTime < 0.1) v.currentTime = 2.4;
+  }
+
+  // Touch screens have no hover: play while the orb is on screen instead.
+  useEffect(() => {
+    if (reduced || !window.matchMedia("(hover: none)").matches) return;
+    const el = wrapRef.current;
+    const io = new IntersectionObserver(
+      ([entry]) => (entry.isIntersecting ? play() : pause()),
+      { threshold: 0.45 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [reduced]);
 
   // No transform/opacity on ancestors: they would isolate the video's blend
   // mode from the page background and bring the black square back.
   return (
     <div className="benefits__art" aria-hidden="true">
       <div
+        ref={wrapRef}
         className="orb"
         onPointerEnter={(e) => {
           if (e.pointerType !== "mouse") return;
@@ -60,6 +82,7 @@ function HoverOrb() {
           playsInline
           preload="auto"
           tabIndex={-1}
+          onLoadedData={showRestFrame}
           animate={{ scale: hot ? 1.3 : 1.2 }}
           transition={{ type: "spring", stiffness: 200, damping: 22 }}
         />
