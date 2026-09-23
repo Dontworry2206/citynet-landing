@@ -358,23 +358,22 @@ h3 { font-size: 19px; line-height: 1.3; }
 .benefits__list p { margin: 0; color: var(--text-muted); font-size: 15px; }
 
 .benefits__art { display: flex; align-items: center; justify-content: center; }
-.orb {
-  position: relative; width: min(100%, 400px); aspect-ratio: 1;
-  border-radius: 36px; overflow: hidden; cursor: pointer;
-  background: #0F1236;
-  box-shadow: var(--shadow-card);
-  touch-action: manipulation;
-}
+.orb { position: relative; width: min(100%, 400px); aspect-ratio: 1; cursor: pointer; touch-action: manipulation; }
 .orb__video {
-  width: 100%; height: 100%; object-fit: cover; display: block;
-  mix-blend-mode: screen; transform: scale(1.15); pointer-events: none;
+  width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none;
+  /* Light theme: invert so the black background turns white, keep hues, multiply it away. */
+  filter: contrast(1.6) brightness(1.9) invert(1) hue-rotate(180deg) saturate(2.4);
+  mix-blend-mode: multiply;
+}
+:root[data-theme="dark"] .orb__video {
   filter: contrast(1.6) brightness(.9);
+  mix-blend-mode: screen;
 }
 
 @media (max-width: 860px) {
   .benefits__grid { grid-template-columns: 1fr; gap: 32px; }
   .benefits__art { order: -1; }
-  .orb { width: min(100%, 280px); }
+  .orb { width: min(100%, 300px); }
 }
 
 /* ================= TARIFFS ================= */

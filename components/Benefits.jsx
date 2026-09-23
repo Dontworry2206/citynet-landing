@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion } from "motion/react";
 import { useApp } from "@/lib/store";
 
@@ -24,25 +24,34 @@ const ICONS = [
 
 function HoverOrb() {
   const videoRef = useRef(null);
+  const [hot, setHot] = useState(false);
 
   const play = () => videoRef.current?.play().catch(() => {});
   const pause = () => videoRef.current?.pause();
 
+  // No transform/opacity on ancestors: they would isolate the video's blend
+  // mode from the page background and bring the black square back.
   return (
     <div className="benefits__art" aria-hidden="true">
-      <motion.div
+      <div
         className="orb"
-        whileHover={{ scale: 1.03, boxShadow: "0 0 0 1px rgba(19,226,241,.55), 0 24px 60px -12px rgba(6,68,244,.55)" }}
-        transition={{ type: "spring", stiffness: 260, damping: 22 }}
-        onPointerEnter={(e) => e.pointerType === "mouse" && play()}
-        onPointerLeave={(e) => e.pointerType === "mouse" && pause()}
+        onPointerEnter={(e) => {
+          if (e.pointerType !== "mouse") return;
+          setHot(true);
+          play();
+        }}
+        onPointerLeave={(e) => {
+          if (e.pointerType !== "mouse") return;
+          setHot(false);
+          pause();
+        }}
         onPointerDown={(e) => {
           if (e.pointerType === "mouse") return;
           const v = videoRef.current;
           if (v) (v.paused ? play() : pause());
         }}
       >
-        <video
+        <motion.video
           ref={videoRef}
           className="orb__video"
           src="/video/benefits.mp4"
@@ -51,8 +60,10 @@ function HoverOrb() {
           playsInline
           preload="auto"
           tabIndex={-1}
+          animate={{ scale: hot ? 1.3 : 1.2 }}
+          transition={{ type: "spring", stiffness: 200, damping: 22 }}
         />
-      </motion.div>
+      </div>
     </div>
   );
 }
