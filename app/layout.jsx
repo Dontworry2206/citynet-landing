@@ -1,11 +1,10 @@
-import { Unbounded } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import "./globals.css";
 
-// Free stand-in for GoodTime Grotesk: wide, geometric, Latin + Cyrillic.
-const unbounded = Unbounded({
+const montserrat = Montserrat({
   subsets: ["latin", "cyrillic"],
   weight: ["500", "600", "700", "800"],
-  variable: "--font-unbounded",
+  variable: "--font-montserrat",
   display: "swap",
 });
 
@@ -23,7 +22,7 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ru" data-theme="light">
-      <body className={unbounded.variable}>{children}</body>
+      <body className={montserrat.variable}>{children}</body>
     </html>
   );
 }
