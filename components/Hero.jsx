@@ -1,30 +1,142 @@
 "use client";
 
-import { motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import {
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "motion/react";
 import { useApp } from "@/lib/store";
 
 const container = {
   hidden: {},
-  show: {
-    transition: { staggerChildren: 0.09, delayChildren: 0.05 },
-  },
+  show: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
 };
 const item = {
   hidden: { opacity: 0, y: 14 },
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 0.61, 0.36, 1] } },
 };
 
-export default function Hero() {
-  const { t, track } = useApp();
+function MagneticLink({ children, strength = 0.3, ...props }) {
+  const x = useSpring(useMotionValue(0), { stiffness: 220, damping: 16, mass: 0.4 });
+  const y = useSpring(useMotionValue(0), { stiffness: 220, damping: 16, mass: 0.4 });
+
+  function onMove(e) {
+    if (e.pointerType !== "mouse") return;
+    const r = e.currentTarget.getBoundingClientRect();
+    x.set((e.clientX - (r.left + r.width / 2)) * strength);
+    y.set((e.clientY - (r.top + r.height / 2)) * strength);
+  }
+  function onLeave() {
+    x.set(0);
+    y.set(0);
+  }
 
   return (
-    <section className="hero" aria-labelledby="hero-h1">
-      <div className="hero__shapes" aria-hidden="true">
-        <span className="pill pill--1" />
-        <span className="pill pill--2" />
-        <span className="pill pill--3" />
-        <span className="pill pill--4" />
-      </div>
+    <motion.a
+      {...props}
+      style={{ x, y }}
+      onPointerMove={onMove}
+      onPointerLeave={onLeave}
+      whileTap={{ scale: 0.97 }}
+    >
+      {children}
+    </motion.a>
+  );
+}
+
+export default function Hero() {
+  const { t, track } = useApp();
+  const reduced = useReducedMotion();
+  const sectionRef = useRef(null);
+  const videoRef = useRef(null);
+  const [playing, setPlaying] = useState(true);
+
+  // Pointer position, normalised to -0.5..0.5 across the hero.
+  const nx = useMotionValue(0);
+  const ny = useMotionValue(0);
+  const sx = useSpring(nx, { stiffness: 60, damping: 20 });
+  const sy = useSpring(ny, { stiffness: 60, damping: 20 });
+  const shiftX = useTransform(sx, [-0.5, 0.5], [22, -22]);
+  const shiftY = useTransform(sy, [-0.5, 0.5], [16, -16]);
+
+  // Spotlight follows the raw pointer in pixels.
+  const px = useMotionValue(-400);
+  const py = useMotionValue(-400);
+  const spotX = useSpring(px, { stiffness: 140, damping: 22 });
+  const spotY = useSpring(py, { stiffness: 140, damping: 22 });
+  const spotlight = useMotionTemplate`radial-gradient(360px circle at ${spotX}px ${spotY}px, rgba(19,226,241,0.20), transparent 65%)`;
+
+  // Video drifts slower than the page while scrolling away.
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
+  const scrollY = useTransform(scrollYProgress, [0, 1], [0, 90]);
+
+  function onPointerMove(e) {
+    if (reduced || e.pointerType !== "mouse") return;
+    const r = sectionRef.current.getBoundingClientRect();
+    nx.set((e.clientX - r.left) / r.width - 0.5);
+    ny.set((e.clientY - r.top) / r.height - 0.5);
+    px.set(e.clientX - r.left);
+    py.set(e.clientY - r.top);
+  }
+  function onPointerLeave() {
+    nx.set(0);
+    ny.set(0);
+    px.set(-400);
+    py.set(-400);
+  }
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (reduced) {
+      v.pause();
+      v.currentTime = 0;
+    } else if (v.paused && playing) {
+      v.play().catch(() => setPlaying(false));
+    }
+  }, [reduced]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function togglePlay() {
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.paused) v.play();
+    else v.pause();
+  }
+
+  const isPlaying = playing && !reduced;
+
+  return (
+    <section
+      ref={sectionRef}
+      className="hero"
+      aria-labelledby="hero-h1"
+      onPointerMove={onPointerMove}
+      onPointerLeave={onPointerLeave}
+    >
+      <motion.div className="hero__media" aria-hidden="true" style={{ y: scrollY }}>
+        <motion.div className="hero__media-inner" style={reduced ? undefined : { x: shiftX, y: shiftY }}>
+          <video
+            ref={videoRef}
+            className="hero__video"
+            src="/video/hero.mp4"
+            autoPlay={!reduced}
+            muted
+            loop
+            playsInline
+            preload="auto"
+            onPlay={() => setPlaying(true)}
+            onPause={() => setPlaying(false)}
+          />
+        </motion.div>
+      </motion.div>
+      <div className="hero__scrim" aria-hidden="true" />
+      {!reduced && <motion.div className="hero__spotlight" aria-hidden="true" style={{ background: spotlight }} />}
+
       <div className="container hero__inner">
         <motion.div className="hero__content" variants={container} initial="hidden" animate="show">
           <motion.p className="overline" variants={item}>
@@ -39,15 +151,13 @@ export default function Hero() {
             {t("hero.subtitle")}
           </motion.p>
           <motion.div className="hero__actions" variants={item}>
-            <motion.a
+            <MagneticLink
               className="btn btn--primary btn--lg"
               href="#lead-form"
-              whileTap={{ scale: 0.97 }}
-              whileHover={{ y: -1 }}
               onClick={() => track("cta_click", { cta_location: "hero" })}
             >
               {t("hero.cta")}
-            </motion.a>
+            </MagneticLink>
             <a className="link-arrow" href="#tariffs">
               {t("hero.secondary")}
             </a>
@@ -57,6 +167,24 @@ export default function Hero() {
           </motion.p>
         </motion.div>
       </div>
+
+      <button
+        type="button"
+        className="hero__toggle"
+        onClick={togglePlay}
+        aria-label={isPlaying ? t("hero.pauseVideo") : t("hero.playVideo")}
+      >
+        {isPlaying ? (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <rect x="6" y="5" width="4" height="14" rx="1" />
+            <rect x="14" y="5" width="4" height="14" rx="1" />
+          </svg>
+        ) : (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z" />
+          </svg>
+        )}
+      </button>
     </section>
   );
 }
