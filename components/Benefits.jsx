@@ -22,20 +22,66 @@ const ICONS = [
   </svg>,
 ];
 
+// Timestamps (s) in benefits.mp4 where the sphere is fully assembled.
+const REST_FRAMES = [2.4, 4.3];
+
 function HoverOrb() {
   const videoRef = useRef(null);
   const wrapRef = useRef(null);
   const [hot, setHot] = useState(false);
   const reduced = useReducedMotion();
 
-  const play = () => videoRef.current?.play().catch(() => {});
-  const pause = () => videoRef.current?.pause();
+  const rafRef = useRef(0);
 
-  // Frame 0 is almost black (invisible on the light theme), so rest on a frame
-  // where the sphere is fully drawn.
+  function play() {
+    const v = videoRef.current;
+    if (!v) return;
+    cancelAnimationFrame(rafRef.current);
+    v.playbackRate = 1;
+    v.play().catch(() => {});
+  }
+
+  function pause() {
+    cancelAnimationFrame(rafRef.current);
+    videoRef.current?.pause();
+  }
+
+  // The clip cycles: the sphere assembles, scatters, and re-forms. Instead of
+  // freezing mid-scatter, keep playing (faster) to the next whole-sphere frame
+  // and stop exactly there.
+  function settle() {
+    const v = videoRef.current;
+    if (!v) return;
+    cancelAnimationFrame(rafRef.current);
+    if (v.paused) v.play().catch(() => {});
+    v.playbackRate = 2;
+
+    let target = REST_FRAMES.find((r) => r > v.currentTime + 0.05);
+    let wrapped = target !== undefined;
+    if (!wrapped) target = REST_FRAMES[0];
+    let prev = v.currentTime;
+
+    const tick = () => {
+      const now = v.currentTime;
+      if (!wrapped && now < prev - 0.5) wrapped = true;
+      prev = now;
+      if (wrapped && now >= target) {
+        v.pause();
+        v.currentTime = target;
+        v.playbackRate = 1;
+        return;
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+  }
+
+  useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
+
+  // Start on a frame where the sphere is fully drawn.
   function showRestFrame() {
     const v = videoRef.current;
-    if (v && v.paused && v.currentTime < 0.1) v.currentTime = 2.4;
+    if (v && v.paused && v.currentTime < 0.1) v.currentTime = REST_FRAMES[0];
   }
 
   // Touch screens have no hover: play while the orb is on screen instead.
@@ -65,12 +111,12 @@ function HoverOrb() {
         onPointerLeave={(e) => {
           if (e.pointerType !== "mouse") return;
           setHot(false);
-          pause();
+          settle();
         }}
         onPointerDown={(e) => {
           if (e.pointerType === "mouse") return;
           const v = videoRef.current;
-          if (v) (v.paused ? play() : pause());
+          if (v) (v.paused ? play() : settle());
         }}
       >
         <motion.video
