@@ -24,11 +24,16 @@ const ICONS = [
 
 // Timestamps (s) in benefits.mp4 where the sphere is fully assembled.
 const REST_FRAMES = [2.4, 4.3];
+const ORB_SRC = "/video/benefits.mp4";
 
 function HoverOrb() {
   const videoRef = useRef(null);
   const wrapRef = useRef(null);
   const [hot, setHot] = useState(false);
+  // Load the clip only when the section is about to scroll into view, so its
+  // half-megabyte doesn't compete with the hero video and fonts on first paint.
+  const [src, setSrc] = useState(null);
+  const hoverRef = useRef(false);
   const reduced = useReducedMotion();
 
   const rafRef = useRef(0);
@@ -78,10 +83,38 @@ function HoverOrb() {
 
   useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
 
+  useEffect(() => {
+    const el = wrapRef.current;
+    let timer;
+    let onLoad;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        io.disconnect();
+        // Give the hero video the whole pipe first: start after page load + a beat.
+        const go = () => (timer = setTimeout(() => setSrc(ORB_SRC), 2500));
+        if (document.readyState === "complete") go();
+        else {
+          onLoad = go;
+          window.addEventListener("load", onLoad, { once: true });
+        }
+      },
+      { rootMargin: "400px 0px" }
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      clearTimeout(timer);
+      if (onLoad) window.removeEventListener("load", onLoad);
+    };
+  }, []);
+
   // Start on a frame where the sphere is fully drawn.
   function showRestFrame() {
     const v = videoRef.current;
-    if (v && v.paused && v.currentTime < 0.1) v.currentTime = REST_FRAMES[0];
+    if (!v) return;
+    if (hoverRef.current) play();
+    else if (v.paused && v.currentTime < 0.1) v.currentTime = REST_FRAMES[0];
   }
 
   // Touch screens have no hover: play while the orb is on screen instead.
@@ -105,24 +138,27 @@ function HoverOrb() {
         className="orb"
         onPointerEnter={(e) => {
           if (e.pointerType !== "mouse") return;
+          hoverRef.current = true;
           setHot(true);
+          setSrc(ORB_SRC);
           play();
         }}
         onPointerLeave={(e) => {
           if (e.pointerType !== "mouse") return;
+          hoverRef.current = false;
           setHot(false);
           settle();
         }}
         onPointerDown={(e) => {
           if (e.pointerType === "mouse") return;
           const v = videoRef.current;
-          if (v) (v.paused ? play() : settle());
+          if (v) (v.paused ? (setSrc(ORB_SRC), play()) : settle());
         }}
       >
         <motion.video
           ref={videoRef}
           className="orb__video"
-          src="/video/benefits.mp4"
+          src={src || undefined}
           muted
           loop
           playsInline
