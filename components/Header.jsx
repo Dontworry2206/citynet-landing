@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { useApp } from "@/lib/store";
+import { PrimaryButton } from "./Buttons";
 
 const LANGS = ["ru", "uz", "en"];
 
@@ -94,18 +95,20 @@ export default function Header() {
   const { t, track, theme } = useApp();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const cta = (location, extraClass) => (
-    <motion.a
-      className={`btn btn--primary ${extraClass || ""}`}
+  const cta = (location, { className = "", wrapperClassName = "", block = false } = {}) => (
+    <PrimaryButton
+      as="a"
+      block={block}
+      className={className}
+      wrapperClassName={wrapperClassName}
       href="#lead-form"
-      whileTap={{ scale: 0.97 }}
       onClick={() => {
         track("cta_click", { cta_location: location });
         setMenuOpen(false);
       }}
     >
       {t("header.cta")}
-    </motion.a>
+    </PrimaryButton>
   );
 
   return (
@@ -145,7 +148,7 @@ export default function Header() {
             <span>71 202 11 11</span>
           </a>
 
-          {cta("header", "btn--sm header-cta")}
+          {cta("header", { className: "btn--sm", wrapperClassName: "header-cta" })}
         </div>
 
         <button
@@ -180,7 +183,7 @@ export default function Header() {
             <a href="#coverage" onClick={() => setMenuOpen(false)}>{t("header.navCoverage")}</a>
             <a href="#how" onClick={() => setMenuOpen(false)}>{t("header.navHow")}</a>
             <a href="tel:+998712021111" onClick={() => track("click_phone")}>71 202 11 11</a>
-            {cta("mobile_menu")}
+            {cta("mobile_menu", { block: true })}
           </motion.div>
         )}
       </AnimatePresence>

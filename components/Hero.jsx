@@ -11,6 +11,7 @@ import {
   useTransform,
 } from "motion/react";
 import { useApp } from "@/lib/store";
+import { PrimaryButton } from "./Buttons";
 
 const container = {
   hidden: {},
@@ -20,34 +21,6 @@ const item = {
   hidden: { opacity: 0, y: 14 },
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 0.61, 0.36, 1] } },
 };
-
-function MagneticLink({ children, strength = 0.3, ...props }) {
-  const x = useSpring(useMotionValue(0), { stiffness: 220, damping: 16, mass: 0.4 });
-  const y = useSpring(useMotionValue(0), { stiffness: 220, damping: 16, mass: 0.4 });
-
-  function onMove(e) {
-    if (e.pointerType !== "mouse") return;
-    const r = e.currentTarget.getBoundingClientRect();
-    x.set((e.clientX - (r.left + r.width / 2)) * strength);
-    y.set((e.clientY - (r.top + r.height / 2)) * strength);
-  }
-  function onLeave() {
-    x.set(0);
-    y.set(0);
-  }
-
-  return (
-    <motion.a
-      {...props}
-      style={{ x, y }}
-      onPointerMove={onMove}
-      onPointerLeave={onLeave}
-      whileTap={{ scale: 0.97 }}
-    >
-      {children}
-    </motion.a>
-  );
-}
 
 export default function Hero() {
   const { t, track } = useApp();
@@ -139,13 +112,15 @@ export default function Hero() {
             {t("hero.subtitle")}
           </motion.p>
           <motion.div className="hero__actions" variants={item}>
-            <MagneticLink
-              className="btn btn--primary btn--lg"
+            <PrimaryButton
+              as="a"
+              magnet
+              className="btn--lg"
               href="#lead-form"
               onClick={() => track("cta_click", { cta_location: "hero" })}
             >
               {t("hero.cta")}
-            </MagneticLink>
+            </PrimaryButton>
             <a className="link-arrow" href="#tariffs">
               {t("hero.secondary")}
             </a>

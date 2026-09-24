@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { motion } from "motion/react";
 import { useApp } from "@/lib/store";
+import { GhostButton } from "./Buttons";
 
 function localized(field, lang) {
   return field[lang] || field.ru;
@@ -99,14 +100,13 @@ export default function Coverage() {
             <h3>{tr.manualTitle}</h3>
             <p>{tr.manualText}</p>
           </div>
-          <motion.a
-            className="btn btn--ghost"
+          <GhostButton
+            as="a"
             href="#lead-form"
-            whileTap={{ scale: 0.97 }}
             onClick={() => track("cta_click", { cta_location: "coverage_manual" })}
           >
             {tr.manualCta}
-          </motion.a>
+          </GhostButton>
         </div>
 
         <div className="trust-stats">

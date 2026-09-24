@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useApp } from "@/lib/store";
+import { PrimaryButton } from "./Buttons";
 
 function normalizePhoneDigits(value) {
   return value.replace(/\D/g, "").slice(0, 9);
@@ -217,14 +218,14 @@ export default function LeadForm() {
             onChange={(e) => update("company", e.target.value)}
           />
 
-          <motion.button
-            className="btn btn--primary btn--lg btn--block"
+          <PrimaryButton
+            className="btn--lg"
             type="submit"
+            block
             disabled={status === "sending"}
-            whileTap={{ scale: 0.98 }}
           >
             {status === "sending" ? tr.sending : tr.submit}
-          </motion.button>
+          </PrimaryButton>
 
           <p className="lead-form__note">{tr.belowNote}</p>
 
