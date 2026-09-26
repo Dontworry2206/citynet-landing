@@ -1,77 +1,72 @@
 "use client";
 
 // From React Bits (https://github.com/DavidHDev/react-bits), MIT + Commons Clause.
-// Locally adapted for this site: none
-import { useState, useEffect, useRef } from 'react';
+// Locally adapted: same props, but driven by motion springs instead of
+// setState + CSS transitions, so it follows the cursor smoothly without
+// re-rendering on every mouse move.
+import { useEffect, useRef } from "react";
+import { motion, useMotionValue, useSpring } from "motion/react";
+
+const SPRING = { stiffness: 170, damping: 17, mass: 0.6 };
 
 const Magnet = ({
   children,
   padding = 100,
   disabled = false,
   magnetStrength = 2,
-  activeTransition = 'transform 0.3s ease-out',
-  inactiveTransition = 'transform 0.5s ease-in-out',
-  wrapperClassName = '',
-  innerClassName = '',
+  wrapperClassName = "",
+  innerClassName = "",
   ...props
 }) => {
-  const [isActive, setIsActive] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const magnetRef = useRef(null);
+  const ref = useRef(null);
+  const x = useSpring(useMotionValue(0), SPRING);
+  const y = useSpring(useMotionValue(0), SPRING);
 
   useEffect(() => {
     if (disabled) {
-      setPosition({ x: 0, y: 0 });
+      x.set(0);
+      y.set(0);
       return;
     }
 
-    const handleMouseMove = e => {
-      if (!magnetRef.current) return;
+    const onMove = (e) => {
+      if (e.pointerType && e.pointerType !== "mouse") return;
+      const el = ref.current;
+      if (!el) return;
 
-      const { left, top, width, height } = magnetRef.current.getBoundingClientRect();
+      const { left, top, width, height } = el.getBoundingClientRect();
       const centerX = left + width / 2;
       const centerY = top + height / 2;
 
-      const distX = Math.abs(centerX - e.clientX);
-      const distY = Math.abs(centerY - e.clientY);
-
-      if (distX < width / 2 + padding && distY < height / 2 + padding) {
-        setIsActive(true);
-
-        const offsetX = (e.clientX - centerX) / magnetStrength;
-        const offsetY = (e.clientY - centerY) / magnetStrength;
-        setPosition({ x: offsetX, y: offsetY });
+      if (
+        Math.abs(centerX - e.clientX) < width / 2 + padding &&
+        Math.abs(centerY - e.clientY) < height / 2 + padding
+      ) {
+        x.set((e.clientX - centerX) / magnetStrength);
+        y.set((e.clientY - centerY) / magnetStrength);
       } else {
-        setIsActive(false);
-        setPosition({ x: 0, y: 0 });
+        x.set(0);
+        y.set(0);
       }
     };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
+    const onLeaveWindow = () => {
+      x.set(0);
+      y.set(0);
     };
-  }, [padding, disabled, magnetStrength]);
 
-  const transitionStyle = isActive ? activeTransition : inactiveTransition;
+    window.addEventListener("pointermove", onMove);
+    document.documentElement.addEventListener("mouseleave", onLeaveWindow);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      document.documentElement.removeEventListener("mouseleave", onLeaveWindow);
+    };
+  }, [padding, disabled, magnetStrength, x, y]);
 
   return (
-    <div
-      ref={magnetRef}
-      className={wrapperClassName}
-      style={{ position: 'relative', display: 'inline-block' }}
-      {...props}
-    >
-      <div
-        className={innerClassName}
-        style={{
-          transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
-          transition: transitionStyle,
-          willChange: 'transform'
-        }}
-      >
+    <div ref={ref} className={wrapperClassName} style={{ position: "relative", display: "inline-block" }} {...props}>
+      <motion.div className={innerClassName} style={{ x, y, willChange: "transform" }}>
         {children}
-      </div>
+      </motion.div>
     </div>
   );
 };

@@ -1,14 +1,25 @@
 "use client";
 
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import ClickSpark from "./reactbits/ClickSpark";
 import GlareHover from "./reactbits/GlareHover";
 import Magnet from "./reactbits/Magnet";
 import StarBorder from "./reactbits/StarBorder";
 
+const PRESS = { type: "spring", stiffness: 500, damping: 30 };
+
+function Arrow() {
+  return (
+    <svg className="btn__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 /**
- * Primary (gradient) button: glare sweep on hover, sparks on click and,
- * optionally, a magnetic pull toward the cursor. Components: React Bits.
+ * Primary (gradient) button. Hover: lifts, the glare sweeps once, the arrow
+ * nudges forward. Press: springs down. Click: a small burst of sparks. The
+ * hero variant is also magnetic. Effects come from React Bits.
  */
 export function PrimaryButton({
   as = "button",
@@ -17,13 +28,23 @@ export function PrimaryButton({
   wrapperClassName = "",
   block = false,
   magnet = false,
+  arrow = false,
   sparkColor = "#22B8FF",
   ...rest
 }) {
+  const reduced = useReducedMotion();
   const M = motion[as];
+
   const button = (
-    <M className={`btn btn--primary ${className}`} whileTap={{ scale: 0.97 }} {...rest}>
-      {children}
+    <M
+      className={`btn btn--primary ${className}`}
+      whileHover={reduced ? undefined : { y: -2 }}
+      whileTap={{ scale: 0.96, y: 0 }}
+      transition={PRESS}
+      {...rest}
+    >
+      <span className="btn__label">{children}</span>
+      {arrow && <Arrow />}
     </M>
   );
 
@@ -35,10 +56,10 @@ export function PrimaryButton({
       borderColor="transparent"
       borderRadius="999px"
       glareColor="#ffffff"
-      glareOpacity={0.4}
-      glareAngle={-30}
-      glareSize={260}
-      transitionDuration={800}
+      glareOpacity={0.3}
+      glareAngle={-25}
+      glareSize={230}
+      transitionDuration={900}
       style={{ display: block ? "grid" : "inline-grid" }}
     >
       {button}
@@ -49,10 +70,10 @@ export function PrimaryButton({
     <ClickSpark
       className={`rb-spark ${block ? "rb-spark--block" : ""} ${wrapperClassName}`}
       sparkColor={sparkColor}
-      sparkSize={11}
-      sparkRadius={22}
-      sparkCount={10}
-      duration={500}
+      sparkSize={9}
+      sparkRadius={24}
+      sparkCount={8}
+      duration={450}
     >
       {glare}
     </ClickSpark>
@@ -60,7 +81,7 @@ export function PrimaryButton({
 
   if (!magnet) return sparks;
   return (
-    <Magnet padding={70} magnetStrength={3} wrapperClassName="rb-magnet">
+    <Magnet padding={60} magnetStrength={4} disabled={!!reduced} wrapperClassName="rb-magnet">
       {sparks}
     </Magnet>
   );
