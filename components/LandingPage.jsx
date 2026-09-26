@@ -11,6 +11,7 @@ import Steps from "./Steps";
 import Faq from "./Faq";
 import LeadForm from "./LeadForm";
 import Footer from "./Footer";
+import ChatWidget from "./ChatWidget";
 
 function SkipLink() {
   const { t } = useApp();
@@ -41,6 +42,7 @@ function Sections() {
         <LeadForm />
       </main>
       <Footer />
+      <ChatWidget />
     </>
   );
 }
