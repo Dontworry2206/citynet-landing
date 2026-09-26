@@ -39,7 +39,7 @@ export default function ChatWidget() {
   const [value, setValue] = useState("");
   const [nameError, setNameError] = useState(false);
 
-  const data = useRef({ tariff: null, address: "", name: "", phone: "", leadId: null });
+  const data = useRef({ tariff: null, segment: "home", address: "", name: "", phone: "", leadId: null });
   const timers = useRef([]);
   const idRef = useRef(0);
   const listRef = useRef(null);
@@ -78,7 +78,7 @@ export default function ChatWidget() {
 
   const start = useCallback(() => {
     clearTimers();
-    data.current = { tariff: null, address: "", name: "", phone: "", leadId: null };
+    data.current = { tariff: null, segment: "home", address: "", name: "", phone: "", leadId: null };
     setMessages([]);
     setValue("");
     setNameError(false);
@@ -144,18 +144,13 @@ export default function ChatWidget() {
     launcherRef.current?.focus();
   }
 
-  function goToBusinessForm() {
-    track("chat_to_form", { step: "business" });
-    closeChat();
-    goToForm("", undefined, "business");
-  }
-
   function pickGoal(goal) {
     push("user", goal.label);
     if (goal.id === "business") {
       data.current.tariff = null;
+      data.current.segment = "business";
       track("chat_goal", { goal: goal.id });
-      say([tr.businessRoute], () => setStep("business"));
+      say([tr.businessAsk], () => setStep("address"));
       return;
     }
     const tariff = content.tariffs.find((x) => x.id === goal.tariff);
@@ -171,7 +166,7 @@ export default function ChatWidget() {
     const d = data.current;
     track("chat_to_form", { step });
     closeChat();
-    goToForm(d.tariff?.id, d.address || undefined);
+    goToForm(d.tariff?.id ?? "", d.address || undefined, d.segment);
   }
 
   async function submitLeadFromChat() {
@@ -183,6 +178,7 @@ export default function ChatWidget() {
       phone: "+998" + d.phone,
       address: d.address,
       tariff: d.tariff?.id || null,
+      segment: d.segment,
       language: lang,
       page_variant: "default",
       source: "chat",
@@ -196,7 +192,7 @@ export default function ChatWidget() {
       await submitLead(lead);
       setTyping(false);
       track("generate_lead", { tariff_id: lead.tariff, form_id: "chat" });
-      say([tr.done], () => setStep("done"));
+      say([d.segment === "business" ? tr.businessDone : tr.done], () => setStep("done"));
     } catch {
       setTyping(false);
       track("form_error", { reason: "chat_submit_failed" });
@@ -214,8 +210,9 @@ export default function ChatWidget() {
       push("user", text);
       setValue("");
       d.address = text;
-      const hit = findCoverage(content, lang, text);
-      const found = hit ? fill(tr.addrFound, { object: hit.object[lang] || hit.object.ru }) : tr.addrUnknown;
+      const hit = d.segment === "business" ? null : findCoverage(content, lang, text);
+      const found =
+        d.segment === "business" ? tr.businessThanks : hit ? fill(tr.addrFound, { object: hit.object[lang] || hit.object.ru }) : tr.addrUnknown;
       say([found, tr.askName], () => setStep("name"));
     } else if (step === "name") {
       if (text.length < 2 || text.length > 60) {
@@ -299,16 +296,6 @@ export default function ChatWidget() {
                       {g.label}
                     </button>
                   ))}
-                </div>
-              )}
-              {step === "business" && (
-                <div className="chat__chips">
-                  <button type="button" className="chat__chip chat__chip--solid" onClick={goToBusinessForm}>
-                    {tr.businessCta}
-                  </button>
-                  <button type="button" className="chat__chip" onClick={start}>
-                    {tr.restart}
-                  </button>
                 </div>
               )}
               {step === "done" && (
