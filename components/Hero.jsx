@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react";
 import {
   motion,
-  useMotionTemplate,
   useMotionValue,
   useReducedMotion,
   useScroll,
@@ -36,13 +35,6 @@ export default function Hero() {
   const shiftX = useTransform(sx, [-0.5, 0.5], [22, -22]);
   const shiftY = useTransform(sy, [-0.5, 0.5], [16, -16]);
 
-  // Spotlight follows the raw pointer in pixels.
-  const px = useMotionValue(-400);
-  const py = useMotionValue(-400);
-  const spotX = useSpring(px, { stiffness: 140, damping: 22 });
-  const spotY = useSpring(py, { stiffness: 140, damping: 22 });
-  const spotlight = useMotionTemplate`radial-gradient(360px circle at ${spotX}px ${spotY}px, rgba(19,226,241,0.20), transparent 65%)`;
-
   // Video drifts slower than the page while scrolling away.
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
   const scrollY = useTransform(scrollYProgress, [0, 1], [0, 90]);
@@ -52,14 +44,10 @@ export default function Hero() {
     const r = sectionRef.current.getBoundingClientRect();
     nx.set((e.clientX - r.left) / r.width - 0.5);
     ny.set((e.clientY - r.top) / r.height - 0.5);
-    px.set(e.clientX - r.left);
-    py.set(e.clientY - r.top);
   }
   function onPointerLeave() {
     nx.set(0);
     ny.set(0);
-    px.set(-400);
-    py.set(-400);
   }
 
   useEffect(() => {
@@ -96,7 +84,6 @@ export default function Hero() {
         </motion.div>
       </motion.div>
       <div className="hero__scrim" aria-hidden="true" />
-      {!reduced && <motion.div className="hero__spotlight" aria-hidden="true" style={{ background: spotlight }} />}
 
       <div className="container hero__inner">
         <motion.div className="hero__content" variants={container} initial="hidden" animate="show">
