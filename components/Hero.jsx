@@ -86,7 +86,7 @@ export default function Hero() {
           <video
             ref={videoRef}
             className="hero__video"
-            src="/video/hero-480.mp4"
+            src="/video/hero-opener.mp4"
             autoPlay={!reduced}
             muted
             loop
