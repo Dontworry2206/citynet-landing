@@ -31,6 +31,11 @@ export default function Tariffs() {
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.45, delay: i * 0.08 }}
             >
+              {tariff.featured && (
+                <span className="tariff-ribbon" aria-hidden="true">
+                  <span>HIT</span>
+                </span>
+              )}
               <p className="tariff-card__name">{tariff.name}</p>
               <p className="tariff-card__speed">
                 {tariff.speed}

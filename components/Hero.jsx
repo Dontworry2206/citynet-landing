@@ -117,7 +117,7 @@ export default function Hero() {
             <PrimaryButton
               as="a"
               arrow
-              className="btn--lg"
+              className="btn--xl"
               href="#lead-form"
               onClick={() => track("cta_click", { cta_location: "hero" })}
             >

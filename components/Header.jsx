@@ -119,8 +119,8 @@ export default function Header() {
             className="brand-logo"
             src={theme === "dark" ? "/img/logo-white.png" : "/img/logo-color.png"}
             alt="CITYNET"
-            width={132}
-            height={28}
+            width={264}
+            height={38}
           />
         </a>
 
@@ -131,15 +131,6 @@ export default function Header() {
         </nav>
 
         <div className="header-actions">
-          <a
-            className="existing-client"
-            href="tel:+998712021111"
-            onClick={() => track("click_phone")}
-          >
-            <span>{t("header.existingClient")}</span>{" "}
-            <span className="existing-client__link">{t("header.support")}</span>
-          </a>
-
           <LangSwitch />
           <ThemeToggle />
 
