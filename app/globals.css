@@ -616,7 +616,7 @@ h3 { font-size: 19px; line-height: 1.3; }
 }
 .chat__launcher:focus-visible, .chat__hint:focus-visible { outline: 3px solid var(--cyan); outline-offset: 4px; }
 .chat__bob { display: block; animation: chatBob 3.6s ease-in-out infinite; transform-origin: 50% 90%; }
-.chat__bob img { width: 74px; height: auto; display: block; user-select: none; -webkit-user-drag: none; }
+.chat__bob img { width: 104px; height: auto; display: block; user-select: none; -webkit-user-drag: none; }
 @keyframes chatBob { 0%, 100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-7px) rotate(1.5deg); } }
 
 .chat__hint {
@@ -687,7 +687,7 @@ h3 { font-size: 19px; line-height: 1.3; }
 
 @media (max-width: 520px) {
   .chat { right: 12px; bottom: 12px; }
-  .chat__bob img { width: 62px; }
+  .chat__bob img { width: 84px; }
   .chat__panel { max-height: calc(100dvh - 24px); }
 }
 @media (prefers-reduced-motion: reduce) {
