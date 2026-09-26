@@ -9,10 +9,13 @@ function localized(field, lang) {
   return field[lang] || field.ru;
 }
 
+const PREVIEW_ROWS = 5;
+
 export default function Coverage() {
   const { t, lang, content, goToForm, track } = useApp();
   const tr = t("coverage");
   const [district, setDistrict] = useState("");
+  const [expanded, setExpanded] = useState(false);
 
   const districts = useMemo(() => {
     const seen = new Set();
@@ -32,6 +35,9 @@ export default function Coverage() {
     [content, district, lang]
   );
 
+  const collapsible = rows.length > PREVIEW_ROWS;
+  const visibleRows = collapsible && !expanded ? rows.slice(0, PREVIEW_ROWS) : rows;
+
   return (
     <section className="section coverage" id="coverage" aria-labelledby="coverage-h2">
       <div className="container">
@@ -44,7 +50,10 @@ export default function Coverage() {
           <label className="visually-hidden" htmlFor="districtFilter">
             {tr.filterDistrict}
           </label>
-          <select id="districtFilter" value={district} onChange={(e) => setDistrict(e.target.value)}>
+          <select id="districtFilter" value={district} onChange={(e) => {
+              setDistrict(e.target.value);
+              setExpanded(false);
+            }}>
             <option value="">{tr.allDistricts}</option>
             {districts.map((d) => (
               <option key={d} value={d}>
@@ -66,7 +75,7 @@ export default function Coverage() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((row) => {
+              {visibleRows.map((row) => {
                 const objectLabel = localized(row.object, lang);
                 return (
                   <tr key={`${objectLabel}-${row.houses}`}>
@@ -94,6 +103,13 @@ export default function Coverage() {
           </table>
         </div>
         {rows.length === 0 && <p className="coverage__no-results">{tr.noResults}</p>}
+        {collapsible && (
+          <div className="coverage__more">
+            <GhostButton type="button" aria-expanded={expanded} onClick={() => setExpanded((v) => !v)}>
+              {expanded ? tr.showLess : `${tr.showMore} (${rows.length - PREVIEW_ROWS})`}
+            </GhostButton>
+          </div>
+        )}
 
         <div className="coverage__manual">
           <div>

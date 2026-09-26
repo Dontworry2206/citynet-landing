@@ -459,6 +459,7 @@ h3 { font-size: 19px; line-height: 1.3; }
   color: var(--blue); background: none; cursor: pointer;
 }
 .coverage__table .row-cta:hover { background: var(--blue); border-color: var(--blue); color: #fff; }
+.coverage__more { display: flex; justify-content: center; margin-top: 20px; }
 .coverage__no-results { color: var(--text-muted); padding: 24px 0; text-align: center; }
 
 .coverage__manual {
