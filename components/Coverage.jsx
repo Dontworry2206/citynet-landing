@@ -27,13 +27,20 @@ export default function Coverage() {
         out.push(label);
       }
     });
-    return out;
+    return out.sort((a, b) => a.localeCompare(b, lang));
   }, [content, lang]);
 
-  const rows = useMemo(
-    () => content.coverage.filter((row) => !district || localized(row.district, lang) === district),
-    [content, district, lang]
-  );
+  const rows = useMemo(() => {
+    const cmp = (a, b) => a.localeCompare(b, lang, { numeric: true });
+    return content.coverage
+      .filter((row) => !district || localized(row.district, lang) === district)
+      .sort(
+        (a, b) =>
+          cmp(localized(a.district, lang), localized(b.district, lang)) ||
+          cmp(localized(a.street, lang), localized(b.street, lang)) ||
+          cmp(localized(a.object, lang), localized(b.object, lang))
+      );
+  }, [content, district, lang]);
 
   const collapsible = rows.length > PREVIEW_ROWS;
   const visibleRows = collapsible && !expanded ? rows.slice(0, PREVIEW_ROWS) : rows;
@@ -75,11 +82,13 @@ export default function Coverage() {
               </tr>
             </thead>
             <tbody>
-              {visibleRows.map((row) => {
+              {visibleRows.map((row, i) => {
                 const objectLabel = localized(row.object, lang);
+                const districtLabel = localized(row.district, lang);
+                const repeated = i > 0 && localized(visibleRows[i - 1].district, lang) === districtLabel;
                 return (
                   <tr key={`${objectLabel}-${row.houses}`}>
-                    <td>{localized(row.district, lang)}</td>
+                    <td className={repeated ? "is-repeat" : ""}>{districtLabel}</td>
                     <td>{localized(row.street, lang)}</td>
                     <td>{objectLabel}</td>
                     <td>{row.houses}</td>
