@@ -481,16 +481,6 @@ h3 { font-size: 19px; line-height: 1.3; }
 .coverage__manual h3 { margin-bottom: 4px; }
 .coverage__manual p { margin: 0; color: var(--text-muted); font-size: 14.5px; }
 
-.trust-stats {
-  margin-top: var(--section-gap);
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
-  padding-top: 48px; border-top: 1px solid var(--border);
-}
-.trust-stat__value { font-family: var(--font-display); font-size: 34px; font-weight: 800; color: var(--blue); }
-:root[data-theme="dark"] .trust-stat__value { color: #fff; }
-.trust-stat__label { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
-@media (max-width: 700px) { .trust-stats { grid-template-columns: 1fr; gap: 20px; } }
-
 /* ================= STEPS ================= */
 .steps__list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; counter-reset: step; }
 .steps__list li {

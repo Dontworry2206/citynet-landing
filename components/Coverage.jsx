@@ -133,15 +133,6 @@ export default function Coverage() {
             {tr.manualCta}
           </GhostButton>
         </div>
-
-        <div className="trust-stats">
-          {content.trustStats.map((stat) => (
-            <div key={stat.value} className="trust-stat">
-              <p className="trust-stat__value">{stat.value}</p>
-              <p className="trust-stat__label">{localized(stat, lang)}</p>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );
