@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useMotionValue,
@@ -11,6 +11,19 @@ import {
 } from "motion/react";
 import { useApp } from "@/lib/store";
 import { PrimaryButton } from "./Buttons";
+
+const HERO_LIGHT = "/video/hero-banner.mp4"; // 720p, ~2 MB
+const HERO_HD = "/video/hero-banner-hd.mp4"; // 1080p, ~6.5 MB
+
+// HD only for large, desktop-class screens on a connection that can take it;
+// phones, tablets, slow links and data-saver users get the light file.
+function pickHeroSrc() {
+  const conn = navigator.connection;
+  const slow = !!conn && (conn.saveData || /(^|-)(2g|3g)$/.test(conn.effectiveType || ""));
+  const wantsLessData = window.matchMedia("(prefers-reduced-data: reduce)").matches;
+  const bigScreen = window.matchMedia("(min-width: 1100px) and (hover: hover) and (pointer: fine)").matches;
+  return bigScreen && !slow && !wantsLessData ? HERO_HD : HERO_LIGHT;
+}
 
 const container = {
   hidden: {},
@@ -26,6 +39,11 @@ export default function Hero() {
   const reduced = useReducedMotion();
   const sectionRef = useRef(null);
   const videoRef = useRef(null);
+  const [videoSrc, setVideoSrc] = useState(null);
+
+  useEffect(() => {
+    setVideoSrc(pickHeroSrc());
+  }, []);
 
   // Pointer position, normalised to -0.5..0.5 across the hero.
   const nx = useMotionValue(0);
@@ -74,7 +92,7 @@ export default function Hero() {
           <video
             ref={videoRef}
             className="hero__video"
-            src="/video/hero-banner.mp4"
+            src={videoSrc || undefined}
             autoPlay={!reduced}
             muted
             loop
