@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useApp } from "@/lib/store";
 import { PrimaryButton } from "./Buttons";
 
@@ -73,6 +73,7 @@ function ThemeToggle({ className }) {
 
 function LangSwitch({ className }) {
   const { lang, setLang } = useApp();
+  const pillId = useId();
   return (
     <div className={`lang-switch ${className || ""}`} role="group" aria-label="Язык / Til / Language">
       {LANGS.map((code) => (
@@ -84,7 +85,14 @@ function LangSwitch({ className }) {
           whileTap={{ scale: 0.92 }}
           aria-pressed={lang === code}
         >
-          {code.toUpperCase()}
+          {lang === code && (
+            <motion.span
+              layoutId={`lang-pill-${pillId}`}
+              className="lang-btn__pill"
+              transition={{ type: "spring", stiffness: 420, damping: 32 }}
+            />
+          )}
+          <span className="lang-btn__label">{code.toUpperCase()}</span>
         </motion.button>
       ))}
     </div>
