@@ -12,8 +12,8 @@ import {
 import { useApp } from "@/lib/store";
 import { PrimaryButton } from "./Buttons";
 
-const HERO_LIGHT = "/video/hero-banner.mp4"; // 720p, ~2 MB
-const HERO_HD = "/video/hero-banner-hd.mp4"; // 1080p, ~6.5 MB
+const HERO_LIGHT = "/video/hero-banner.mp4"; // 720p, ~7.5 MB
+const HERO_HD = "/video/hero-banner-hd.mp4"; // 1080p, ~9 MB (streams over ~3 Mbit/s)
 
 // HD only for large, desktop-class screens on a connection that can take it;
 // phones, tablets, slow links and data-saver users get the light file.
