@@ -100,9 +100,6 @@ export default function Hero() {
 
       <div className="container hero__inner">
         <motion.div className="hero__content" variants={container} initial="hidden" animate="show">
-          <motion.p className="overline" variants={item}>
-            {t("hero.overline")}
-          </motion.p>
           <motion.h1 id="hero-h1" className="hero__h1" variants={item}>
             {t("hero.h1Line1")}
             <br />
