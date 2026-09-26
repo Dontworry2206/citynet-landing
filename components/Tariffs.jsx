@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { useApp } from "@/lib/store";
-import { GhostButton, PrimaryButton } from "./Buttons";
+import { PrimaryButton } from "./Buttons";
 
 function formatPrice(sum) {
   return sum.toLocaleString("ru-RU").replace(/,/g, " ");
@@ -45,21 +45,16 @@ export default function Tariffs() {
                 {formatPrice(tariff.price)} <span>{tr.perMonth}</span>
               </p>
               <p className="tariff-card__desc">{descriptions[tariff.id]}</p>
-              {(() => {
-                const Cta = tariff.featured ? PrimaryButton : GhostButton;
-                return (
-                  <Cta
-                    type="button"
-                    block
-                    onClick={() => {
-                      track("select_tariff", { tariff_id: tariff.id });
-                      goToForm(tariff.id);
-                    }}
-                  >
-                    {tr.cta} {tariff.name}
-                  </Cta>
-                );
-              })()}
+              <PrimaryButton
+                type="button"
+                block
+                onClick={() => {
+                  track("select_tariff", { tariff_id: tariff.id });
+                  goToForm(tariff.id);
+                }}
+              >
+                {tr.cta} {tariff.name}
+              </PrimaryButton>
             </motion.div>
           ))}
         </div>
