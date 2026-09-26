@@ -7,6 +7,7 @@ import Hero from "./Hero";
 import Benefits from "./Benefits";
 import Tariffs from "./Tariffs";
 import Coverage from "./Coverage";
+import Business from "./Business";
 import Steps from "./Steps";
 import Faq from "./Faq";
 import LeadForm from "./LeadForm";
@@ -37,6 +38,7 @@ function Sections() {
         <Benefits />
         <Tariffs />
         <Coverage />
+        <Business />
         <Steps />
         <Faq />
         <LeadForm />

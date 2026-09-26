@@ -26,7 +26,7 @@ export default function Footer() {
         <div className="footer__col">
           <h3>{tr.colCompany}</h3>
           <a href="https://citynet.uz/about" target="_blank" rel="noopener noreferrer">{tr.linkAbout}</a>
-          <a href="https://citynet.uz" target="_blank" rel="noopener noreferrer">{tr.linkBusiness}</a>
+          <a href="#business">{tr.linkBusiness}</a>
           <a href="tel:+998712021111" onClick={() => track("click_phone")}>{tr.linkSupport}</a>
         </div>
 

@@ -9,7 +9,8 @@ import { PrimaryButton } from "./Buttons";
 const initialFields = { name: "", phone: "", address: "", tariff: "", consent: false, company: "" };
 
 export default function LeadForm() {
-  const { t, content, lang, selectedTariff, prefillAddress, formNonce, track } = useApp();
+  const { t, content, lang, selectedTariff, prefillAddress, segment, setSegment, formNonce, track } = useApp();
+  const isBusiness = segment === "business";
   const tr = t("form");
 
   const [fields, setFields] = useState(initialFields);
@@ -70,7 +71,8 @@ export default function LeadForm() {
       name: fields.name.trim(),
       phone: "+998" + normalizePhoneDigits(fields.phone),
       address: fields.address.trim(),
-      tariff: fields.tariff || null,
+      tariff: isBusiness ? null : fields.tariff || null,
+      segment,
       language: lang,
       page_variant: "default",
       consent_version: "v1",
@@ -105,6 +107,12 @@ export default function LeadForm() {
         </div>
 
         <form className="lead-form" onSubmit={handleSubmit} noValidate>
+          {isBusiness && (
+            <p className="lead-form__segment">
+              <span>{tr.businessBadge}</span>
+              <button type="button" onClick={() => setSegment("home")}>{tr.businessSwitch}</button>
+            </p>
+          )}
           <div className="field">
             <label htmlFor="f-name">{tr.nameLabel}</label>
             <input
@@ -166,6 +174,7 @@ export default function LeadForm() {
             <p className="field-error" role="alert">{errors.address || ""}</p>
           </div>
 
+          {!isBusiness && (
           <div className="field">
             <label htmlFor="f-tariff">{tr.tariffLabel}</label>
             <select id="f-tariff" name="tariff" value={fields.tariff} onChange={(e) => update("tariff", e.target.value)}>
@@ -177,6 +186,7 @@ export default function LeadForm() {
               ))}
             </select>
           </div>
+          )}
 
           <div className="field field--checkbox">
             <label className="checkbox-label">

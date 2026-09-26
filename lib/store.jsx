@@ -29,6 +29,7 @@ export function AppProvider({ children }) {
   const [theme, setThemeState] = useState("light");
   const [selectedTariff, setSelectedTariff] = useState("");
   const [prefillAddress, setPrefillAddress] = useState("");
+  const [segment, setSegment] = useState("home"); // "home" | "business"
   const [formNonce, setFormNonce] = useState(0);
 
   useEffect(() => {
@@ -82,7 +83,8 @@ export function AppProvider({ children }) {
     [lang]
   );
 
-  const goToForm = useCallback((tariffId, address) => {
+  const goToForm = useCallback((tariffId, address, nextSegment = "home") => {
+    setSegment(nextSegment);
     if (tariffId !== undefined) setSelectedTariff(tariffId);
     if (address !== undefined) setPrefillAddress(address);
     setFormNonce((n) => n + 1);
@@ -114,11 +116,13 @@ export function AppProvider({ children }) {
       content: CITYNET_CONTENT,
       selectedTariff,
       prefillAddress,
+      segment,
+      setSegment,
       formNonce,
       goToForm,
       track,
     }),
-    [lang, setLang, theme, toggleTheme, t, selectedTariff, prefillAddress, formNonce, goToForm, track]
+    [lang, setLang, theme, toggleTheme, t, selectedTariff, prefillAddress, segment, formNonce, goToForm, track]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
