@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 import { useApp } from "@/lib/store";
+import Mascot from "./Mascot";
 
 const ICONS = [
   <svg key="0" width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -21,157 +21,6 @@ const ICONS = [
     <path d="M4 12.5 9 17l11-11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
   </svg>,
 ];
-
-// Timestamps (s) in benefits.mp4 where the sphere is fully assembled.
-const REST_FRAMES = [2.4, 4.3];
-const ORB_SRC = "/video/benefits.mp4";
-
-function HoverOrb() {
-  const videoRef = useRef(null);
-  const wrapRef = useRef(null);
-  const [hot, setHot] = useState(false);
-  // Load the clip only when the section is about to scroll into view, so its
-  // half-megabyte doesn't compete with the hero video and fonts on first paint.
-  const [src, setSrc] = useState(null);
-  const hoverRef = useRef(false);
-  const reduced = useReducedMotion();
-
-  const rafRef = useRef(0);
-
-  function play() {
-    const v = videoRef.current;
-    if (!v) return;
-    cancelAnimationFrame(rafRef.current);
-    v.playbackRate = 1;
-    v.play().catch(() => {});
-  }
-
-  function pause() {
-    cancelAnimationFrame(rafRef.current);
-    videoRef.current?.pause();
-  }
-
-  // The clip cycles: the sphere assembles, scatters, and re-forms. Instead of
-  // freezing mid-scatter, keep playing (faster) to the next whole-sphere frame
-  // and stop exactly there.
-  function settle() {
-    const v = videoRef.current;
-    if (!v) return;
-    cancelAnimationFrame(rafRef.current);
-    if (v.paused) v.play().catch(() => {});
-    v.playbackRate = 2;
-
-    let target = REST_FRAMES.find((r) => r > v.currentTime + 0.05);
-    let wrapped = target !== undefined;
-    if (!wrapped) target = REST_FRAMES[0];
-    let prev = v.currentTime;
-
-    const tick = () => {
-      const now = v.currentTime;
-      if (!wrapped && now < prev - 0.5) wrapped = true;
-      prev = now;
-      if (wrapped && now >= target) {
-        v.pause();
-        v.currentTime = target;
-        v.playbackRate = 1;
-        return;
-      }
-      rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-  }
-
-  useEffect(() => () => cancelAnimationFrame(rafRef.current), []);
-
-  useEffect(() => {
-    const el = wrapRef.current;
-    let timer;
-    let onLoad;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        io.disconnect();
-        // Give the hero video the whole pipe first: start after page load + a beat.
-        const go = () => (timer = setTimeout(() => setSrc(ORB_SRC), 2500));
-        if (document.readyState === "complete") go();
-        else {
-          onLoad = go;
-          window.addEventListener("load", onLoad, { once: true });
-        }
-      },
-      { rootMargin: "400px 0px" }
-    );
-    io.observe(el);
-    return () => {
-      io.disconnect();
-      clearTimeout(timer);
-      if (onLoad) window.removeEventListener("load", onLoad);
-    };
-  }, []);
-
-  // Start on a frame where the sphere is fully drawn.
-  function showRestFrame() {
-    const v = videoRef.current;
-    if (!v) return;
-    if (hoverRef.current) play();
-    else if (v.paused && v.currentTime < 0.1) v.currentTime = REST_FRAMES[0];
-  }
-
-  // Touch screens have no hover: play while the orb is on screen instead.
-  useEffect(() => {
-    if (reduced || !window.matchMedia("(hover: none)").matches) return;
-    const el = wrapRef.current;
-    const io = new IntersectionObserver(
-      ([entry]) => (entry.isIntersecting ? play() : pause()),
-      { threshold: 0.45 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [reduced]);
-
-  // No transform/opacity on ancestors: they would isolate the video's blend
-  // mode from the page background and bring the black square back.
-  return (
-    <div className="benefits__art" aria-hidden="true">
-      <div
-        ref={wrapRef}
-        className="orb"
-        onPointerEnter={(e) => {
-          if (e.pointerType !== "mouse") return;
-          hoverRef.current = true;
-          setHot(true);
-          setSrc(ORB_SRC);
-          play();
-        }}
-        onPointerLeave={(e) => {
-          if (e.pointerType !== "mouse") return;
-          hoverRef.current = false;
-          setHot(false);
-          settle();
-        }}
-        onPointerDown={(e) => {
-          if (e.pointerType === "mouse") return;
-          const v = videoRef.current;
-          if (v) (v.paused ? (setSrc(ORB_SRC), play()) : settle());
-        }}
-      >
-        <motion.video
-          ref={videoRef}
-          className="orb__video"
-          src={src || undefined}
-          muted
-          loop
-          playsInline
-          preload="auto"
-          tabIndex={-1}
-          onLoadedData={showRestFrame}
-          animate={{ scale: hot ? 1.3 : 1.2 }}
-          transition={{ type: "spring", stiffness: 200, damping: 22 }}
-        />
-      </div>
-    </div>
-  );
-}
 
 export default function Benefits() {
   const { t } = useApp();
@@ -201,7 +50,7 @@ export default function Benefits() {
             ))}
           </ul>
         </div>
-        <HoverOrb />
+        <Mascot />
       </div>
     </section>
   );
