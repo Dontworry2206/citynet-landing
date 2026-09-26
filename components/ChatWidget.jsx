@@ -144,8 +144,20 @@ export default function ChatWidget() {
     launcherRef.current?.focus();
   }
 
+  function goToBusinessForm() {
+    track("chat_to_form", { step: "business" });
+    closeChat();
+    goToForm("", undefined, "business");
+  }
+
   function pickGoal(goal) {
     push("user", goal.label);
+    if (goal.id === "business") {
+      data.current.tariff = null;
+      track("chat_goal", { goal: goal.id });
+      say([tr.businessRoute], () => setStep("business"));
+      return;
+    }
     const tariff = content.tariffs.find((x) => x.id === goal.tariff);
     data.current.tariff = tariff;
     track("chat_goal", { goal: goal.id, tariff_id: tariff.id });
@@ -287,6 +299,16 @@ export default function ChatWidget() {
                       {g.label}
                     </button>
                   ))}
+                </div>
+              )}
+              {step === "business" && (
+                <div className="chat__chips">
+                  <button type="button" className="chat__chip chat__chip--solid" onClick={goToBusinessForm}>
+                    {tr.businessCta}
+                  </button>
+                  <button type="button" className="chat__chip" onClick={start}>
+                    {tr.restart}
+                  </button>
                 </div>
               )}
               {step === "done" && (
