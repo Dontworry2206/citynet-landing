@@ -3,7 +3,6 @@
 import { motion, useReducedMotion } from "motion/react";
 import ClickSpark from "./reactbits/ClickSpark";
 import GlareHover from "./reactbits/GlareHover";
-import Magnet from "./reactbits/Magnet";
 import StarBorder from "./reactbits/StarBorder";
 
 const PRESS = { type: "spring", stiffness: 500, damping: 30 };
@@ -18,8 +17,8 @@ function Arrow() {
 
 /**
  * Primary (gradient) button. Hover: lifts, the glare sweeps once, the arrow
- * nudges forward. Press: springs down. Click: a small burst of sparks. The
- * hero variant is also magnetic. Effects come from React Bits.
+ * nudges forward. Press: springs down. Click: a small burst of sparks.
+ * Glare and sparks come from React Bits.
  */
 export function PrimaryButton({
   as = "button",
@@ -27,7 +26,6 @@ export function PrimaryButton({
   className = "",
   wrapperClassName = "",
   block = false,
-  magnet = false,
   arrow = false,
   sparkColor = "#22B8FF",
   ...rest
@@ -66,7 +64,7 @@ export function PrimaryButton({
     </GlareHover>
   );
 
-  const sparks = (
+  return (
     <ClickSpark
       className={`rb-spark ${block ? "rb-spark--block" : ""} ${wrapperClassName}`}
       sparkColor={sparkColor}
@@ -77,13 +75,6 @@ export function PrimaryButton({
     >
       {glare}
     </ClickSpark>
-  );
-
-  if (!magnet) return sparks;
-  return (
-    <Magnet padding={60} magnetStrength={4} disabled={!!reduced} wrapperClassName="rb-magnet">
-      {sparks}
-    </Magnet>
   );
 }
 

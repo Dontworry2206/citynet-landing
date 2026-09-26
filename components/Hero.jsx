@@ -114,7 +114,6 @@ export default function Hero() {
           <motion.div className="hero__actions" variants={item}>
             <PrimaryButton
               as="a"
-              magnet
               arrow
               className="btn--lg"
               href="#lead-form"
