@@ -12,7 +12,7 @@ import {
 } from "motion/react";
 import { useApp } from "@/lib/store";
 
-const SRC = { dark: "/img/mascot-blue.webp", light: "/img/mascot-white.webp" };
+const SRC = { dark: "/img/mascot-white.webp", light: "/img/mascot-blue.webp" };
 
 // Geometry in source-image pixels (both renders share the same pose).
 const W = 640;

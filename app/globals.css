@@ -415,17 +415,37 @@ h3 { font-size: 19px; line-height: 1.3; }
 
 /* ================= TARIFFS ================= */
 .tariff-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+@property --tariff-border-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
 .tariff-card {
-  background: var(--surface);
-  border: 1.5px solid var(--border);
+  --tariff-border-angle: 0deg;
+  border: 1.5px solid transparent;
   border-radius: var(--radius-lg);
   padding: 32px 28px;
   display: flex; flex-direction: column;
   box-shadow: var(--shadow-card);
+  background:
+    var(--surface) padding-box,
+    conic-gradient(from var(--tariff-border-angle), transparent 0deg, var(--cyan) 50deg, var(--blue) 110deg, transparent 165deg, transparent 360deg) border-box,
+    var(--border) border-box;
+  animation: tariff-border-spin 6.5s linear infinite;
 }
 .tariff-card--featured {
-  border-color: var(--blue);
   position: relative;
+  animation-duration: 4.5s;
+  background:
+    var(--surface) padding-box,
+    conic-gradient(from var(--tariff-border-angle), transparent 0deg, var(--cyan) 60deg, var(--blue) 130deg, transparent 190deg, transparent 360deg) border-box,
+    var(--blue) border-box;
+}
+@keyframes tariff-border-spin {
+  to { --tariff-border-angle: 360deg; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tariff-card { animation: none; }
 }
 .tariff-card__name { font-family: var(--font-display); font-size: clamp(28px, 3vw, 34px); font-weight: 800; letter-spacing: .04em; line-height: 1.1; color: var(--blue); margin-bottom: 16px; }
 :root[data-theme="dark"] .tariff-card__name { color: #fff; }

@@ -5,7 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useApp } from "@/lib/store";
 import { formatPhoneDisplay, newLeadId, normalizePhoneDigits, submitLead } from "@/lib/lead";
 
-const SRC = { dark: "/img/mascot-blue.webp", light: "/img/mascot-white.webp" };
+const SRC = { dark: "/img/mascot-white.webp", light: "/img/mascot-blue.webp" };
 const HINT_KEY = "citynet_chat_hint_seen";
 
 const fill = (tpl, vars) => tpl.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? "");
