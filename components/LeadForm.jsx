@@ -96,10 +96,6 @@ export default function LeadForm() {
 
   return (
     <section className="section final-cta" id="lead-form" aria-labelledby="final-h2">
-      <div className="hero__shapes hero__shapes--footer" aria-hidden="true">
-        <span className="pill pill--5" />
-        <span className="pill pill--6" />
-      </div>
       <div className="container final-cta__grid">
         <div className="final-cta__text">
           <h2 id="final-h2">{t("finalCta.title")}</h2>

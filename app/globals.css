@@ -432,7 +432,7 @@ h3 { font-size: 19px; line-height: 1.3; }
   background-clip: padding-box, border-box, border-box;
   background-image:
     linear-gradient(var(--surface), var(--surface)),
-    conic-gradient(from var(--tariff-border-angle), transparent 0deg, var(--cyan) 50deg, var(--blue) 110deg, transparent 165deg, transparent 360deg),
+    conic-gradient(from var(--tariff-border-angle), rgba(19, 226, 241, 0) 0deg, var(--cyan) 50deg, var(--blue) 110deg, rgba(6, 68, 244, 0) 165deg, rgba(6, 68, 244, 0) 360deg),
     linear-gradient(var(--border), var(--border));
   animation: tariff-border-spin var(--tariff-border-speed) linear infinite;
   transition: box-shadow .25s var(--ease);
@@ -443,7 +443,7 @@ h3 { font-size: 19px; line-height: 1.3; }
   --tariff-border-speed: 4.5s;
   background-image:
     linear-gradient(var(--surface), var(--surface)),
-    conic-gradient(from var(--tariff-border-angle), transparent 0deg, var(--cyan) 60deg, var(--blue) 130deg, transparent 190deg, transparent 360deg),
+    conic-gradient(from var(--tariff-border-angle), rgba(19, 226, 241, 0) 0deg, var(--cyan) 60deg, var(--blue) 130deg, rgba(6, 68, 244, 0) 190deg, rgba(6, 68, 244, 0) 360deg),
     linear-gradient(var(--blue), var(--blue));
 }
 .tariff-card--featured:hover { --tariff-border-speed: 1.8s; }
@@ -555,13 +555,21 @@ h3 { font-size: 19px; line-height: 1.3; }
 .faq__answer-inner { padding: 0 0 22px; color: var(--text-muted); font-size: 15px; line-height: 1.6; max-width: 720px; }
 
 /* ================= FINAL CTA / FORM ================= */
-.final-cta { position: relative; background: var(--hero-bg); color: var(--hero-text); overflow: hidden; overflow: clip; }
+.final-cta {
+  position: relative;
+  background-color: var(--hero-bg);
+  background-image:
+    radial-gradient(65% 75% at 6% 0%, rgba(19, 226, 241, .18) 0%, rgba(19, 226, 241, 0) 60%),
+    radial-gradient(50% 60% at 100% 100%, rgba(6, 68, 244, .35) 0%, rgba(6, 68, 244, 0) 65%),
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, .06) 1.4px, transparent 0),
+    repeating-linear-gradient(124deg, rgba(19, 226, 241, .07) 0, rgba(19, 226, 241, .07) 1px, transparent 1px, transparent 116px);
+  background-size: auto, auto, 30px 30px, auto;
+  color: var(--hero-text);
+  overflow: hidden; overflow: clip;
+}
 .final-cta .section-subtitle { color: var(--hero-text-muted); }
 .final-cta__grid { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
 .final-cta__text h2 { color: #fff; }
-.hero__shapes--footer .pill { opacity: .3; }
-.pill--5 { width: 100px; height: 320px; left: -20px; top: -60px; background: linear-gradient(160deg, rgba(19,226,241,.4), transparent); }
-.pill--6 { width: 140px; height: 140px; left: 10%; bottom: -60px; opacity: .25; }
 
 .lead-form {
   background: var(--surface);
