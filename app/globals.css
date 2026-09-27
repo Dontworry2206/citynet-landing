@@ -422,30 +422,36 @@ h3 { font-size: 19px; line-height: 1.3; }
 }
 .tariff-card {
   --tariff-border-angle: 0deg;
+  --tariff-border-speed: 7s;
   border: 1.5px solid transparent;
   border-radius: var(--radius-lg);
   padding: 32px 28px;
   display: flex; flex-direction: column;
   box-shadow: var(--shadow-card);
-  background:
-    var(--surface) padding-box,
-    conic-gradient(from var(--tariff-border-angle), transparent 0deg, var(--cyan) 50deg, var(--blue) 110deg, transparent 165deg, transparent 360deg) border-box,
-    var(--border) border-box;
-  animation: tariff-border-spin 6.5s linear infinite;
+  background-origin: padding-box, border-box, border-box;
+  background-clip: padding-box, border-box, border-box;
+  background-image:
+    linear-gradient(var(--surface), var(--surface)),
+    conic-gradient(from var(--tariff-border-angle), transparent 0deg, var(--cyan) 50deg, var(--blue) 110deg, transparent 165deg, transparent 360deg),
+    linear-gradient(var(--border), var(--border));
+  animation: tariff-border-spin var(--tariff-border-speed) linear infinite;
+  transition: box-shadow .25s var(--ease);
 }
+.tariff-card:hover { --tariff-border-speed: 2.4s; }
 .tariff-card--featured {
   position: relative;
-  animation-duration: 4.5s;
-  background:
-    var(--surface) padding-box,
-    conic-gradient(from var(--tariff-border-angle), transparent 0deg, var(--cyan) 60deg, var(--blue) 130deg, transparent 190deg, transparent 360deg) border-box,
-    var(--blue) border-box;
+  --tariff-border-speed: 4.5s;
+  background-image:
+    linear-gradient(var(--surface), var(--surface)),
+    conic-gradient(from var(--tariff-border-angle), transparent 0deg, var(--cyan) 60deg, var(--blue) 130deg, transparent 190deg, transparent 360deg),
+    linear-gradient(var(--blue), var(--blue));
 }
+.tariff-card--featured:hover { --tariff-border-speed: 1.8s; }
 @keyframes tariff-border-spin {
   to { --tariff-border-angle: 360deg; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tariff-card { animation: none; }
+  .tariff-card, .tariff-card:hover { animation: none; }
 }
 .tariff-card__name { font-family: var(--font-display); font-size: clamp(28px, 3vw, 34px); font-weight: 800; letter-spacing: .04em; line-height: 1.1; color: var(--blue); margin-bottom: 16px; }
 :root[data-theme="dark"] .tariff-card__name { color: #fff; }
