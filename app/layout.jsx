@@ -12,7 +12,11 @@ export const metadata = {
   title: "Домашний интернет CITYNET — тарифы и подключение",
   description:
     "Интернет вашего дома от CITYNET. Тарифы от 145 000 сум/мес. Оставьте адрес — проверим возможность подключения.",
-  icons: { icon: "/img/logo-color.png" },
+  icons: {
+    icon: [{ url: "/img/favicon.png", sizes: "512x512", type: "image/png" }],
+    shortcut: [{ url: "/img/favicon-32.png", sizes: "32x32", type: "image/png" }],
+    apple: [{ url: "/img/favicon-180.png", sizes: "180x180", type: "image/png" }],
+  },
 };
 
 export const viewport = {
