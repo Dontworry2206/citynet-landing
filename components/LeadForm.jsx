@@ -95,13 +95,8 @@ export default function LeadForm() {
   }
 
   return (
-    <section className="section final-cta" id="lead-form" aria-labelledby="final-h2">
+    <section className="section final-cta" id="lead-form" aria-label={t("finalCta.title")}>
       <div className="container final-cta__grid">
-        <div className="final-cta__text">
-          <h2 id="final-h2">{t("finalCta.title")}</h2>
-          <p className="section-subtitle">{t("finalCta.subtitle")}</p>
-        </div>
-
         <form className="lead-form" onSubmit={handleSubmit} noValidate>
           {isBusiness && (
             <p className="lead-form__segment">
